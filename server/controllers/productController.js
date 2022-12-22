@@ -8,14 +8,14 @@ const getProductsByVenue = asyncHandler(async (req, res) => {
 });
 
 const addProduct = asyncHandler(async (req, res) => {
-  const { venueId, name, price, icon } = req.body;
+  const { venue, name, price, icon } = req.body;
 
-  if (!name || !venueId || !price || !icon) {
+  if (!name || !venue || !price || !icon) {
     res.status(400);
     throw new Error("Please add all fields");
   }
 
-  const productExists = await Product.findOne({ name, venue: venueId });
+  const productExists = await Product.findOne({ name, venue });
 
   if (productExists) {
     res.status(400);
@@ -23,7 +23,7 @@ const addProduct = asyncHandler(async (req, res) => {
   }
 
   const product = await Product.create({
-    venue: venueId,
+    venue,
     name,
     price,
     icon,
