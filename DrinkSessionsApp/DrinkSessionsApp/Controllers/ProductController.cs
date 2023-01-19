@@ -29,6 +29,13 @@ namespace DrinkSessionsApp.Controllers
             return Ok(_mapper.Map<IEnumerable<ProductReadDto>>(products));
         }
 
+        [HttpGet("byVenue/{id}", Name = "GetProductByVenue")]
+        public async Task<ActionResult<IEnumerable<ProductReadDto>>> GetProductsByVenue(int id)
+        {
+            var products = await _productRepo.GetWhere(p => p.VenueId == id);
+            return Ok(_mapper.Map<IEnumerable<ProductReadDto>>(products));
+        }
+
         [HttpGet("{id}", Name = "GetProductById")]
         public async Task<ActionResult<ProductReadDto>> GetProductById(int id)
         {

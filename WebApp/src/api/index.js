@@ -28,6 +28,19 @@ export const deleteVenue = (id) => {
   return instance.delete(`api/Venue/${id}`).then((res) => res.data);
 };
 
+//products
+export const addProduct = (product) => {
+  return instance.post("api/Product", product).then((res) => res.data);
+};
+
+export const getProductsByVenue = (id) => {
+  return instance.get(`api/Product/byVenue/${id}`).then((res) => res.data);
+};
+
+export const deleteProduct = (id) => {
+  return instance.delete(`api/Product/${id}`).then((res) => res.data);
+};
+
 // ### FUNCTIONS ###
 
 export const setAuthToken = (token) => {

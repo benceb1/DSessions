@@ -8,6 +8,7 @@ namespace DrinkSessionsApp.Dtos
     {
         public int Id { get; set; }
         public string? Name { get; set; }
+        public string? Icon { get; set; }
         public int? Price { get; set; }
     }
 }

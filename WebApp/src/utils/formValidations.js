@@ -22,3 +22,12 @@ export const VenueFormValidation = Yup.object({
     .max(20, "Must be 20 characters or less")
     .required("Required"),
 });
+
+export const ProductFormValidation = Yup.object({
+  name: Yup.string()
+    .max(20, "Must be 20 characters or less")
+    .required("Required"),
+  venue: Yup.string().required("Required"),
+  icon: Yup.string().required("Required"),
+  price: Yup.number().required("Required"),
+});

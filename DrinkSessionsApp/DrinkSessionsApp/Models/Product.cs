@@ -11,6 +11,7 @@ namespace DrinkSessionsApp.Models
         public int Id { get; set; }
         public string Name { get; set; } = String.Empty;
         public int Price { get; set; }
+        public string Icon { get; set; } = String.Empty;
 
         [ForeignKey("VenueId")]
         public virtual Venue? Venue { get; set; }
