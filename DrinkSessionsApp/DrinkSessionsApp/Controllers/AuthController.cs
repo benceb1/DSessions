@@ -3,6 +3,8 @@ using DrinkSessionsApp.Data;
 using DrinkSessionsApp.Dtos;
 using DrinkSessionsApp.Models;
 using DrinkSessionsApp.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -29,12 +31,12 @@ namespace DrinkSessionsApp.Controllers
             _userRepo = userRepo;
         }
 
-        [HttpGet("me"), Authorize]
-        public ActionResult<string> GetMe()
+        [HttpGet("me"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task <ActionResult<UserReadDto>> GetMe()
         {
             var userName = _userService.GetName();
-
-            return Ok(userName);
+            var user = await _userRepo.GetOneWhere(u => u.Name == userName);
+            return Ok(_mapper.Map<UserReadDto>(user));
         }
 
         [HttpPost]
@@ -43,7 +45,7 @@ namespace DrinkSessionsApp.Controllers
             var userExists = await _userRepo.GetOneWhere(x => x.Name == request.Name);
             if (userExists != null)
             {
-                return BadRequest("User already exists!");
+                return BadRequest("User already exists with this name!");
             }
 
             request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);

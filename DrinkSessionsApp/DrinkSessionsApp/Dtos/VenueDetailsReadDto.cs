@@ -1,8 +1,8 @@
 ﻿namespace DrinkSessionsApp.Dtos
 {
-    public class UserReadDto
+    public class VenueDetailsReadDto
     {
         public int Id { get; set; }
-        public string Name { get; set; } = String.Empty;
+        public string? Name { get; set; }
     }
 }

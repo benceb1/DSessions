@@ -9,8 +9,9 @@ namespace DrinkSessionsApp.Profiles
         public MyProfiles()
         {
             // source -> target
-            //venues
+            // venues
             CreateMap<Venue, VenueReadDto>();
+            CreateMap<Venue, VenueDetailsReadDto>();
             CreateMap<VenueCreateDto, Venue>();
 
             //products
@@ -18,11 +19,19 @@ namespace DrinkSessionsApp.Profiles
             CreateMap<ProductCreateDto, Product>();
             CreateMap<ProductUpdateDto, Product>();
 
-            //users
+            // users
             CreateMap<User, UserReadDto>();
             CreateMap<User, UserLoginSuccessDto>();
             CreateMap<UserLoginDto, User>();
             CreateMap<UserCreateDto, User>();
+
+            // sessions
+            CreateMap<DrinkSession, DrinkSessionReadDto>();
+            CreateMap<DrinkSessionCreateDto, DrinkSession>();
+
+            // consumptions
+            CreateMap<Consumption, ConsumptionReadDto>();
+            CreateMap<ConsumptionCreateDto, Consumption>();
 
         }
     }

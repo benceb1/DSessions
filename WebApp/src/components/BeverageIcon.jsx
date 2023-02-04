@@ -10,12 +10,20 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 
-const BeverageIcon = ({ icon, ...props }) => {
+const BeverageIcon = ({ icon, margin, ...props }) => {
   if (!iconTypes.includes(icon))
     // fallback icon
-    return <FontAwesomeIcon icon={faFlask} {...props} />;
+    return (
+      <FontAwesomeIcon icon={faFlask} style={{ margin: margin }} {...props} />
+    );
 
-  return <FontAwesomeIcon icon={selectedIcon(icon)} {...props} />;
+  return (
+    <FontAwesomeIcon
+      icon={selectedIcon(icon)}
+      style={{ margin: margin }}
+      {...props}
+    />
+  );
 };
 
 export default BeverageIcon;

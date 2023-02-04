@@ -20,8 +20,10 @@ import {
   Link,
   DrawerFooter,
   Button,
+  ButtonGroup,
+  useColorMode,
 } from "@chakra-ui/react";
-import { HamburgerIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { Link as RouterLink } from "react-router-dom";
 import { randomColor } from "../utils";
 import useUserStore from "../hooks/useUserStore";
@@ -34,7 +36,7 @@ const Navbar = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
-
+  const { colorMode, toggleColorMode } = useColorMode();
   return (
     <>
       <Container maxW="container.lg" p={1}>
@@ -45,13 +47,21 @@ const Navbar = () => {
             </Heading>
           </Box>
           <Spacer />
-          <IconButton
-            ref={btnRef}
-            onClick={onOpen}
-            variant="ghost"
-            size="lg"
-            icon={<HamburgerIcon />}
-          />
+          <ButtonGroup>
+            <IconButton
+              variant="ghost"
+              size="lg"
+              onClick={toggleColorMode}
+              icon={colorMode == "dark" ? <SunIcon /> : <MoonIcon />}
+            />
+            <IconButton
+              ref={btnRef}
+              onClick={onOpen}
+              variant="ghost"
+              size="lg"
+              icon={<HamburgerIcon />}
+            />
+          </ButtonGroup>
         </Flex>
       </Container>
       <Drawer
@@ -117,5 +127,9 @@ const links = [
   {
     name: "Sessions",
     url: "sessions",
+  },
+  {
+    name: "Session to test",
+    url: "session",
   },
 ];

@@ -1,7 +1,15 @@
 import { useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./components/Layout";
-import { Login, Main, Products, Register, Sessions, Venues } from "./pages";
+import {
+  Login,
+  Main,
+  Products,
+  Register,
+  Session,
+  Sessions,
+  Venues,
+} from "./pages";
 
 function App() {
   const router = createBrowserRouter([
@@ -28,6 +36,10 @@ function App() {
     {
       path: "/register",
       element: <Register />,
+    },
+    {
+      path: "/session",
+      element: <Session />,
     },
   ]);
 

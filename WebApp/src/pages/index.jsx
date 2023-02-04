@@ -5,5 +5,6 @@ import Session from "./Session";
 import Sessions from "./Sessions";
 import Login from "./Login";
 import Register from "./Register";
+import Summary from "./Summary";
 
-export { Main, Products, Venues, Session, Sessions, Register, Login };
+export { Main, Products, Venues, Session, Sessions, Register, Login, Summary };

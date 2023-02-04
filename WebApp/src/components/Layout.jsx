@@ -6,7 +6,9 @@ const Layout = ({ children }) => {
   return (
     <Box minHeight="100vh">
       <Navbar />
-      <Container mt="5">{children}</Container>
+      <Container mt="5" mb="5">
+        {children}
+      </Container>
     </Box>
   );
 };

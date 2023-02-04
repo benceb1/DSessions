@@ -26,9 +26,9 @@ namespace DrinkSessionsApp.Data
             await _context.SaveChangesAsync();
         }
 
-        public virtual async Task<IEnumerable<T>> GetAll()
+        public virtual IQueryable<T> GetAll()
         {
-            return await _context.Set<T>().ToListAsync();
+            return _context!.Set<T>();
         }
 
         public async Task SaveChanges()

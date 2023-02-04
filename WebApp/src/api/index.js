@@ -1,12 +1,24 @@
 import axios from "axios";
 
+export const BASE_URL = "https://localhost:7089/";
+
 const instance = axios.create({
-  baseURL: "http://localhost:5089/",
+  baseURL: BASE_URL,
 });
+
+const localStorageUser = JSON.parse(localStorage.getItem("user"));
+
+if (localStorageUser) {
+  setAuthToken(localStorageUser.token);
+}
 
 // ### REQUESTS ###
 
 //auth
+export const me = () => {
+  return instance.get("api/Auth/me").then((res) => res.data);
+};
+
 export const register = (user) => {
   return instance.post("api/Auth", user).then((res) => res.data);
 };
@@ -41,12 +53,21 @@ export const deleteProduct = (id) => {
   return instance.delete(`api/Product/${id}`).then((res) => res.data);
 };
 
+// sessions
+export const createSession = (sessionData) => {
+  return instance.post("api/Session", sessionData).then((res) => res.data);
+};
+
+export const getOpenSessions = () => {
+  return instance.get("api/Session/openSessions").then((res) => res.data);
+};
+
 // ### FUNCTIONS ###
 
-export const setAuthToken = (token) => {
+export function setAuthToken(token) {
   if (token) {
     instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   } else {
     delete axios.defaults.headers.common["Authorization"];
   }
-};
+}

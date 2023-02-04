@@ -5,13 +5,6 @@ const theme = extendTheme({
     heading: `'Roboto Flex', sans-serif`,
     body: `'Roboto Flex', sans-serif`,
   },
-  styles: {
-    global: {
-      body: {
-        color: "gray.600",
-      },
-    },
-  },
 });
 
 export default theme;

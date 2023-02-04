@@ -13,11 +13,7 @@ namespace DrinkSessionsApp.Data
         {
             return await _context.Venues.AnyAsync(x => x.Id == id);
         }
-
-        public override async Task<IEnumerable<Venue>> GetAll()
-        {
-            return await _context.Venues!.Include(x => x.Products).ToListAsync();
-        }
+        // include products
 
         public override async Task<Venue?> GetById(int id)
         {

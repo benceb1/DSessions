@@ -12,6 +12,7 @@ namespace DrinkSessionsApp.Models
         public int Code { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ClosedDate { get; set; }
+        public bool Closed { get; set; } = false;
 
         [ForeignKey("UserId")]
         public virtual User? User { get; set; }

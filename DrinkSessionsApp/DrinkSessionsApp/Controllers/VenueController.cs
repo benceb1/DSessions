@@ -3,7 +3,7 @@ using DrinkSessionsApp.Data;
 using DrinkSessionsApp.Dtos;
 using DrinkSessionsApp.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace DrinkSessionsApp.Controllers
@@ -35,7 +35,7 @@ namespace DrinkSessionsApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<VenueReadDto>>> GetAllVenues()
         {
-            var venues = await _venueRepo.GetAll();
+            var venues = await _venueRepo.GetAll().Include(v => v.Products).ToListAsync();
             return Ok(_mapper.Map<IEnumerable<VenueReadDto>>(venues));
         }
 

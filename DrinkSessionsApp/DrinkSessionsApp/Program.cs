@@ -1,4 +1,8 @@
+using DrinkSessionsApp;
 using DrinkSessionsApp.Data;
+using DrinkSessionsApp.Data.Interfaces;
+using DrinkSessionsApp.Data.ModelRepositories;
+using DrinkSessionsApp.Hubs;
 using DrinkSessionsApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -14,12 +18,13 @@ var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(MyAllowSpecificOrigins,
-        builder =>
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
         {
-            builder.AllowAnyOrigin();
-            builder.AllowAnyHeader();
-            builder.AllowAnyMethod();
+            policy.WithOrigins("http://127.0.0.1:5173")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
         });
 });
 
@@ -28,6 +33,8 @@ builder.Services.AddControllers().AddNewtonsoftJson(s =>
     s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 });
 
+builder.Services.AddSignalR();
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddDbContext<DataContext>(options =>
@@ -35,11 +42,17 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddSingleton<SessionRegistry>();
 
 builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddScoped<IUserRepo, UserRepo>();
+
 builder.Services.AddScoped<IVenueRepo, VenueRepo>();
+
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
+
+builder.Services.AddScoped<IDrinkSessionRepo, DrinkSessionRepo>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -65,7 +78,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                .GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+                .GetBytes(s: builder.Configuration.GetSection("AppSettings:Token").Value)),
             ValidateIssuer = false,
             ValidateAudience = false
         };
@@ -87,9 +100,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<DSessionHub>("/rts");
 
 app.Run();
 

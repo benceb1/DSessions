@@ -3,6 +3,7 @@ using DrinkSessionsApp.Data;
 using DrinkSessionsApp.Dtos;
 using DrinkSessionsApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DrinkSessionsApp.Controllers
 {
@@ -25,7 +26,7 @@ namespace DrinkSessionsApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductReadDto>>> GetAllProducts()
         {
-            var products = await _productRepo.GetAll();
+            var products = await _productRepo.GetAll().ToListAsync();
             return Ok(_mapper.Map<IEnumerable<ProductReadDto>>(products));
         }
 
