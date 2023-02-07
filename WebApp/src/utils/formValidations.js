@@ -36,3 +36,7 @@ export const CreateSessionFormValidation = Yup.object({
   venue: Yup.string().required("Required"),
   code: Yup.string().required("Required"),
 });
+
+export const AddConsumptionFormValidation = Yup.object({
+  product: Yup.string().required("Required"),
+});

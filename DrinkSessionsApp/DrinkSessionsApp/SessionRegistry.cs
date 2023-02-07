@@ -5,39 +5,43 @@ namespace DrinkSessionsApp
     public class SessionRegistry
     {
         // key: sessionCode
-        private readonly Dictionary<string, List<SessionUser>> _sessionUsers = new();
+        private readonly List<SessionUser> _sessionUsers = new();
 
-        public void JoinSession(string sessionCode, SessionUser sessionUser)
+        public Func<string, Task>? NotifyClosedConnections { get; set; }
+
+        public void JoinSession(SessionUser sessionUser)
         {
-            _sessionUsers[sessionCode].Add(sessionUser);
+            _sessionUsers.Add(sessionUser);
         }
 
         public void LeaveSession(string connectionId)
         {
-            var sessionUserItem = _sessionUsers.Where(item =>
-            {
-                foreach (var user in item.Value)
-                {
-                    return user.ConnectionId == connectionId;
-                }
-
-                return false;
-            }).FirstOrDefault();
+            _sessionUsers.RemoveAll(x => x.ConnectionId == connectionId);
         }
 
         public List<SessionUser> GetUsersBySessionCode(string code)
         {
-            return _sessionUsers[code];
+            return _sessionUsers.Where(x => x.SessionCode == code).ToList();   
+        }
+
+        public SessionUser? GetUserByConnectionId(string connectionId)
+        {
+            return _sessionUsers.Where(x => x.ConnectionId == connectionId).FirstOrDefault();
         }
 
         public List<string> GetSessionCodes()
         {
-            return _sessionUsers.Keys.ToList();
+            return _sessionUsers.Select(x => x.SessionCode).Distinct().ToList();
         }
 
         public void CloseSession(string code)
         {
-            _sessionUsers.Remove(code);
+            _sessionUsers.RemoveAll(x => x.SessionCode == code);
+        }
+
+        public bool SessionContainsUserName(string code, string username)
+        {
+            return _sessionUsers.Any(x => x.SessionCode == code && x.Name == username);
         }
     }
 }

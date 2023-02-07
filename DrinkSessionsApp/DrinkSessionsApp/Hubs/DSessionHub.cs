@@ -1,4 +1,6 @@
-﻿using DrinkSessionsApp.Data.Interfaces;
+﻿using AutoMapper;
+using DrinkSessionsApp.Data.Interfaces;
+using DrinkSessionsApp.Dtos;
 using DrinkSessionsApp.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -8,39 +10,76 @@ namespace DrinkSessionsApp.Hubs
 {
     public class DSessionHub : Hub
     {
-        private readonly IDrinkSessionRepo _drinkSessionRepo;
+        private readonly IConsumptionRepo _consumptionRepo;
         private readonly SessionRegistry _sessionRegistry;
+        private readonly IMapper _mapper;
 
-        public DSessionHub(IDrinkSessionRepo drinkSessionRepo, SessionRegistry sessionRegistry)
+        public DSessionHub(IConsumptionRepo consumptionRepo, SessionRegistry sessionRegistry, IMapper mapper)
         {
-            _drinkSessionRepo = drinkSessionRepo;
+            _consumptionRepo = consumptionRepo;
             _sessionRegistry = sessionRegistry;
+            _mapper = mapper;
         }
 
-        public async Task<JoinResponse> JoinSession(JoinRequest request)
+        public async Task<ICollection<ConsumptionReadDto>> JoinSession(JoinRequest request)
         {
-            var sessionUsernameExists = _sessionRegistry.GetUsersBySessionCode(request.Code).Where(u => u.Name == request.Name);
-
-            if (sessionUsernameExists != null)
+            var sessionUsernameExists = _sessionRegistry.SessionContainsUserName(request.Code, request.Name);
+            
+            if (sessionUsernameExists)
             {
-                return new JoinResponse(Status.ERROR, new List<Consumption>());
+                return new List<ConsumptionReadDto>();
             }
 
-            var session = await _drinkSessionRepo
-                .GetAll()
-                .Where(s => s.Code == int.Parse(request.Code) && s.Closed == false)
-                .Include(s => s.Consumptions)
-                .FirstOrDefaultAsync();
-
-            if (session == null)
-            {
-                return new JoinResponse(Status.ERROR, new List<Consumption>());
-            }
+            var consumptions = await _consumptionRepo.GetAll()
+                .Where(x => x.DrinkSession!.Code == int.Parse(request.Code))
+                .Include(x => x.Product)
+                .ToListAsync();
 
             await Groups.AddToGroupAsync(Context.ConnectionId, request.Code.ToString());
-            _sessionRegistry.JoinSession(request.Code, new SessionUser(Context.ConnectionId, request.Name));
+            _sessionRegistry.JoinSession(new SessionUser(Context.ConnectionId, request.Name, request.Code));
 
-            return new JoinResponse(Status.OK, session.Consumptions!.ToList());
+            return _mapper.Map<ICollection<ConsumptionReadDto>>(consumptions);
+        }
+
+        public async Task<Task?> AddConsumption(ConsumptionCreateDto createDto)
+        {
+            var consumption = _mapper.Map<Consumption>(createDto);
+            await _consumptionRepo.Create(consumption);
+
+            consumption = await _consumptionRepo.GetById(consumption.Id);
+            var sessionUser = _sessionRegistry.GetUserByConnectionId(Context.ConnectionId);
+
+            if (sessionUser == null)
+            {
+                return null;
+            }
+
+            return Clients.Group(sessionUser.SessionCode)
+                .SendAsync("consumption_added", _mapper.Map<ConsumptionReadDto>(consumption));
+        }
+
+        public async Task<Task?> ChangeAmount(ConsumptionUpdateDto updateDto)
+        {
+            var consumption = await _consumptionRepo.GetById(updateDto.Id);
+            consumption!.Amount = updateDto.Amount;
+            await _consumptionRepo.Update(consumption);
+
+            var sessionUser = _sessionRegistry.GetUserByConnectionId(Context.ConnectionId);
+
+            if (sessionUser == null)
+            {
+                return null;
+            }
+
+            return Clients.Group(sessionUser.SessionCode)
+                .SendAsync("amount_changed", _mapper.Map<ConsumptionReadDto>(consumption));
+        }
+
+        public Task CloseSession(string sessionCode)
+        {
+            _sessionRegistry.CloseSession(sessionCode);
+
+            return Clients.Group(sessionCode).SendAsync("session_closed");
         }
 
         public override Task OnDisconnectedAsync(Exception? exception)
@@ -49,11 +88,5 @@ namespace DrinkSessionsApp.Hubs
             _sessionRegistry.LeaveSession(Context.ConnectionId);
             return base.OnDisconnectedAsync(exception);
         }
-
     }
-
-    // records
-    
-
-    
 }

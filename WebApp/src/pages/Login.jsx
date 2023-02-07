@@ -20,7 +20,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Layout } from "../components";
 import useUserStore from "../hooks/useUserStore";
 import { useMutation } from "@tanstack/react-query";
-import { login, setAuthToken } from "../api";
+import { login } from "../api";
 import { useFormik } from "formik";
 import { LoginFormValidation } from "../utils/formValidations";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";

@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Layout from "./components/Layout";
 import {
   Login,
   Main,
@@ -8,6 +6,7 @@ import {
   Register,
   Session,
   Sessions,
+  Summary,
   Venues,
 } from "./pages";
 
@@ -40,6 +39,10 @@ function App() {
     {
       path: "/session",
       element: <Session />,
+    },
+    {
+      path: "/summary/:sessionId",
+      element: <Summary />,
     },
   ]);
 

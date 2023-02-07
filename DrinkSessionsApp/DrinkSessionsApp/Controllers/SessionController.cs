@@ -15,12 +15,14 @@ namespace DrinkSessionsApp.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IDrinkSessionRepo _drinkSessionRepo;
+        private readonly IConsumptionRepo _consumptionRepo;
         private readonly IUserService _userService;
 
-        public SessionController(IMapper mapper, IDrinkSessionRepo drinkSessionRepo, IUserService userService)
+        public SessionController(IMapper mapper, IDrinkSessionRepo drinkSessionRepo, IConsumptionRepo consumptionRepo, IUserService userService)
         {
             _mapper = mapper;
             _drinkSessionRepo = drinkSessionRepo;
+            _consumptionRepo = consumptionRepo;
             _userService = userService;
         }
 
@@ -35,7 +37,6 @@ namespace DrinkSessionsApp.Controllers
         [HttpGet("openSessions")]
         public async Task<ActionResult<IEnumerable<DrinkSessionReadDto>>> GetOpenSessions()
         {
-            // Ezen még dolgozni kell mert nem efficient
             var sessions = await _drinkSessionRepo
                 .GetAll()
                 .Where(s => s.Closed == false)
@@ -69,7 +70,7 @@ namespace DrinkSessionsApp.Controllers
             return Ok(sessionReadDto);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("close/{id}"), Authorize]
         public async Task<ActionResult<DrinkSessionReadDto>> CloseSession(int id)
         {
             var session = await _drinkSessionRepo.GetById(id);
@@ -80,10 +81,49 @@ namespace DrinkSessionsApp.Controllers
             }
 
             session.Closed = true;
+            session.ClosedDate = DateTime.Now;
 
             await _drinkSessionRepo.Update(session);
 
             return Ok(_mapper.Map<DrinkSessionReadDto>(session));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<DrinkSessionReadDto>> GetSession(int id)
+        {
+            var session = await _drinkSessionRepo.GetById(id);
+
+            if (session == null)
+            {
+                return BadRequest("Session not found");
+            }
+
+            return Ok(_mapper.Map<DrinkSessionReadDto>(session));
+        }
+
+
+        [HttpGet("closedSessions"), Authorize]
+        public async Task<ActionResult<IEnumerable<DrinkSessionReadDto>>> GetUserSessions()
+        {
+            var username = _userService.GetName();
+            var sessions = await _drinkSessionRepo
+                .GetAll()
+                .Where(s => s.User!.Name == username && s.Closed == true)
+                .Include(s => s.Venue)
+                .ToListAsync();
+
+            return Ok(_mapper.Map<IEnumerable<DrinkSessionReadDto>>(sessions));
+        }
+
+        [HttpGet("consumptionsBySession/{id}")]
+        public async Task<ActionResult<IEnumerable<DrinkSessionReadDto>>> GetConsumptionsBySession(int id)
+        {
+            var consumptions = await _consumptionRepo.GetAll()
+                .Where(x => x.DrinkSessionId == id)
+                .Include(x => x.Product)
+                .ToListAsync();
+
+            return Ok(_mapper.Map<IEnumerable<ConsumptionReadDto>>(consumptions));
         }
     }
 }

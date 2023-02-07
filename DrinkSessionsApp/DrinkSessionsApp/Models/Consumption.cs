@@ -9,6 +9,7 @@ namespace DrinkSessionsApp.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Username { get; set; } = string.Empty;
+        public int Amount { get; set; } = 1;
 
         [ForeignKey("DrinkSessionId")]
         public virtual DrinkSession? DrinkSession { get; set; }

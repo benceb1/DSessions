@@ -65,6 +65,5 @@ namespace DrinkSessionsApp.Controllers
 
             return NoContent();
         }
-
     }
 }

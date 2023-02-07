@@ -11,6 +11,8 @@ import {
   Heading,
   Input,
   Select,
+  Skeleton,
+  Stack,
   StackDivider,
   Text,
   VStack,
@@ -34,10 +36,7 @@ const Main = () => {
   const [sessionUserName, setSessionUserName] = useState("");
   const [sessionNameError, setSessionNameError] = useState("");
 
-  const { user } = useUserStore((state) => ({
-    user: state.user,
-    logout: state.logout,
-  }));
+  const user = useUserStore((state) => state.user);
 
   const venuesQuery = useQuery({
     queryKey: ["venues"],
@@ -76,21 +75,44 @@ const Main = () => {
   const handleJoin = (e, session) => {
     e.preventDefault();
 
-    if (sessionUserName == "" || !sessionUserName) {
+    if (!user && (sessionUserName == "" || !sessionUserName)) {
       setSessionNameError("Session name cannot be empty!");
       return;
     }
 
-    setSessionUserName("");
-
     setSessionDetails({
-      username: sessionUserName,
+      username: user ? user.name : sessionUserName,
       sessionCode: session.code,
-      sessionID: session.id,
+      sessionId: session.id,
+      venue: session.venue,
+      ownerId: session.userId,
     });
+    setSessionUserName("");
 
     navigate("../session");
   };
+
+  let openSessions = sessionsQuery.isLoading ? (
+    <Stack>
+      <Skeleton height="20px" />
+      <Skeleton height="20px" />
+      <Skeleton height="20px" />
+    </Stack>
+  ) : sessionsQuery.data.length ? (
+    <VStack divider={<StackDivider />} spacing={4} align="stretch">
+      {sessionsQuery.data?.map((s, i) => (
+        <Flex key={i} justifyContent="space-between">
+          <Box>
+            <Text>name: {s.venue.name}</Text>
+            <Text>code: {s.code}</Text>
+          </Box>
+          <Button onClick={(e) => handleJoin(e, s)}>Join</Button>
+        </Flex>
+      ))}
+    </VStack>
+  ) : (
+    <Text>There is no sessions</Text>
+  );
 
   return (
     <Layout>
@@ -161,29 +183,21 @@ const Main = () => {
           <Heading size="md">Join Session</Heading>
         </CardHeader>
         <CardBody>
-          <FormControl m="1rem 0" isInvalid={sessionNameError}>
-            <FormLabel>Your name</FormLabel>
-            <Input
-              value={sessionUserName}
-              onChange={(e) => {
-                setSessionUserName(e.target.value);
-                if (e.target.value != "" && sessionNameError)
-                  setSessionNameError("");
-              }}
-            />
-            <FormErrorMessage>{sessionNameError}</FormErrorMessage>
-          </FormControl>
-          <VStack divider={<StackDivider />} spacing={4} align="stretch">
-            {sessionsQuery.data?.map((s, i) => (
-              <Flex key={i} justifyContent="space-between">
-                <Box>
-                  <Text>name: {s.venue.name}</Text>
-                  <Text>code: {s.code}</Text>
-                </Box>
-                <Button onClick={(e) => handleJoin(e, s)}>Join</Button>
-              </Flex>
-            ))}
-          </VStack>
+          {!user && (
+            <FormControl m="1rem 0" isInvalid={sessionNameError}>
+              <FormLabel>Your name</FormLabel>
+              <Input
+                value={sessionUserName}
+                onChange={(e) => {
+                  setSessionUserName(e.target.value);
+                  if (e.target.value != "" && sessionNameError)
+                    setSessionNameError("");
+                }}
+              />
+              <FormErrorMessage>{sessionNameError}</FormErrorMessage>
+            </FormControl>
+          )}
+          {openSessions}
         </CardBody>
       </Card>
     </Layout>

@@ -8,7 +8,6 @@ namespace DrinkSessionsApp.Dtos
     {
         public int? Code { get; set; }
         public int? VenueId { get; set; }
-
         public int? UserId { get; set; }
     }
 }

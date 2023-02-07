@@ -1,8 +1,3 @@
-/*
-session username
-session code
-session id
-*/
 import { create } from "zustand";
 
 const useDSessionStore = create((set) => ({

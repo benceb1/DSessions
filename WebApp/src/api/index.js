@@ -62,6 +62,20 @@ export const getOpenSessions = () => {
   return instance.get("api/Session/openSessions").then((res) => res.data);
 };
 
+export const getUserClosedSessions = () => {
+  return instance.get("api/Session/closedSessions").then((res) => res.data);
+};
+
+export const closeSession = (id) => {
+  return instance.put(`api/Session/close/${id}`).then((res) => res.data);
+};
+
+export const getConsumptionsBySession = (id) => {
+  return instance
+    .get(`api/Session/consumptionsBySession/${id}`)
+    .then((res) => res.data);
+};
+
 // ### FUNCTIONS ###
 
 export function setAuthToken(token) {

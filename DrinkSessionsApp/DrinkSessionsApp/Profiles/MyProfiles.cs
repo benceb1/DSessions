@@ -32,6 +32,7 @@ namespace DrinkSessionsApp.Profiles
             // consumptions
             CreateMap<Consumption, ConsumptionReadDto>();
             CreateMap<ConsumptionCreateDto, Consumption>();
+            CreateMap<ConsumptionUpdateDto, Consumption>();
 
         }
     }

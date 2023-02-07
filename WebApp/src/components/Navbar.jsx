@@ -80,15 +80,16 @@ const Navbar = () => {
               spacing={4}
               align="stretch"
             >
-              {links.map(({ name, url }, i) => (
-                <Center h="40px" key={i}>
-                  <Link as={RouterLink} to={`../${url}`}>
-                    <Text align="center" as="b">
-                      {name}
-                    </Text>
-                  </Link>
-                </Center>
-              ))}
+              {user &&
+                links.map(({ name, url }, i) => (
+                  <Center h="40px" key={i}>
+                    <Link as={RouterLink} to={`../${url}`}>
+                      <Text align="center" as="b">
+                        {name}
+                      </Text>
+                    </Link>
+                  </Center>
+                ))}
             </VStack>
           </DrawerBody>
           <DrawerFooter>
@@ -127,9 +128,5 @@ const links = [
   {
     name: "Sessions",
     url: "sessions",
-  },
-  {
-    name: "Session to test",
-    url: "session",
   },
 ];

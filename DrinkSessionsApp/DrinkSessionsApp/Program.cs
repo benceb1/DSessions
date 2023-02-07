@@ -54,6 +54,8 @@ builder.Services.AddScoped<IProductRepo, ProductRepo>();
 
 builder.Services.AddScoped<IDrinkSessionRepo, DrinkSessionRepo>();
 
+builder.Services.AddScoped<IConsumptionRepo, ConsumptionRepo>();
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddHttpContextAccessor();
