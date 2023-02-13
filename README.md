@@ -2,6 +2,10 @@
 
 A demó az adott [linken](https://dsessions.netlify.app "demo") érhető el.
 
+[frontend](https://github.com/benceb1/DSessions/tree/main/WebApp "frontend")
+
+[backend](https://github.com/benceb1/DSessions/tree/main/DrinkSessionsApp "backend")
+
 Az applikáció fő funkciója, hogy valós időben megjeleníti az étel és ital fogyasztások mennyiségét és költségét a felhasználóknak és ezeket az információkat eltárolja.
 
 A felhasználónak lehetősége van fiókot létrehozni egy felhasználónév és jelszó megadásával. Ezt a funkciót most a lehető legegyszerűbben oldottam meg, egy jwt tokent tárol el a böngészőben. 
